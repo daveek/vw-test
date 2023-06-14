@@ -1,6 +1,22 @@
 # VwTest
 
+## Have you ever had a Keyboard Comparator?
+
+## What are the metrics and the types of Keyboards available in the Market?
+
+In here I pretend to stablish a easy way to make comparision between different keyboards.
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.1.
+
+## Backend server
+
+## Run `npm run server` for a json-server. Navigate to `http://localhost:3000/`. The application will automatically reload if you change any of the source files.
+
+Then you can make REST API Calls, such as:
+GET from http://localhost:3000/keyboards ← list all keyboards  
+GET /1 ← view detail of a specific keyboard, where id = 1  
+POST ← creates a new keyboard (as long as it has an available id)  
+PATCH /1 ← edits the keyboard with id = 1  
+DELETE /1 ← deletes the keyboard, with id = 1
 
 ## Development server
 

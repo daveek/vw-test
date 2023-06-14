@@ -1,0 +1,18 @@
+{
+  "keyboards": [
+    {
+      "id": 1,
+      "label": "Gaming RGB",
+      "description": "Clean keys and iluminated",
+      "category": "mechanical",
+      "lang": "en"
+    },
+    {
+      "id": 2,
+      "label": "Office",
+      "description": "Start office and programing code",
+      "category": "membrane",
+      "lang": "es"
+    }
+  ]
+}
