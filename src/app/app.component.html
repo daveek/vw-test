@@ -1,5 +1,5 @@
 <section name="keyboards-main">
-  <div *ngFor="let kb of keyboards">
+  <div *ngFor="let kb of keyboards$ | async">
     <!-- <keyboard name="kb.name" description="kb.description"></keyboard> -->
     {{ kb.name }} :: {{ kb.description }}
   </div>

@@ -1,8 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, delay, map, mergeMap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  throwError,
+  filter,
+  Subject,
+} from 'rxjs';
+import {
+  catchError,
+  delay,
+  map,
+  mergeMap,
+  take,
+  takeUntil,
+} from 'rxjs/operators';
 import { Keyboards } from '../models/keyboards';
+import { isNotNull } from '../helpers/is-not-null.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -11,36 +26,70 @@ export class KeyboardsService {
   // URL to connect with server and retrieve data
   private readonly API_URL = 'http://localhost:3000/keyboards';
 
-  // Keyboards Data
-  private _keyboards: Array<Keyboards> = [];
-
   // Streams of observable to get
-  private readonly keyboardsSubject$ = new BehaviorSubject<Keyboards | null>(
-    null
+  private readonly keyboardsSubject$ = new BehaviorSubject<Array<Keyboards>>(
+    []
   );
-  _Keyboards$: Observable<Keyboards | null> =
-    this.keyboardsSubject$.asObservable();
+  _keyboards$: Observable<Keyboards[]> = this.keyboardsSubject$.asObservable();
+  private readonly _onDestroy$ = new Subject<void>();
 
   constructor(private http: HttpClient) {
-    this._keyboards = [];
+    this.fetchKeyboards();
   }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    console.log(`onInit Keybs Service`);
-    this.getKeyboards().subscribe((kbs) => (this._keyboards = kbs));
+    console.log(`onInit Keyboards Service`);
   }
 
-  public get keyboards(): Array<Keyboards> {
-    return this._keyboards;
+  public ngOnDestroy(): void {
+    this._onDestroy$.next();
+    this._onDestroy$.complete();
   }
 
-  public getKeyboards(): Observable<Array<Keyboards>> {
+  private fetchKeyboards(): void {
+    this.getKeyboards()
+      .pipe(filter(isNotNull), take(1), takeUntil(this._onDestroy$))
+      .subscribe(
+        (kbs: Array<Keyboards>) => {
+          this.keyboardsSubject$.next(kbs);
+        },
+        (error: any) => {
+          console.error('Error fetching keyboards:', error);
+        }
+      );
+  }
+
+  public get keyboards$(): Observable<Array<Keyboards>> {
+    return this._keyboards$;
+  }
+
+  private getKeyboards(): Observable<Array<Keyboards>> {
     console.log('Retrieving keyboards from server');
     return this.http
       .get<Array<Keyboards>>(this.API_URL)
       .pipe(catchError(this.handleError));
+  }
+
+  public getKeyboardById(id: string): Observable<Keyboards> {
+    const url = `${this.API_URL}/${id}`;
+    return this.http.get<Keyboards>(url);
+  }
+
+  public createKeyboard(keyboard: Keyboards): Observable<Keyboards> {
+    return this.http.post<Keyboards>(this.API_URL, keyboard);
+  }
+
+  public updateKeyboard(
+    id: string,
+    keyboard: Partial<Keyboards>
+  ): Observable<Keyboards> {
+    const url = `${this.API_URL}/${id}`;
+    return this.http.patch<Keyboards>(url, keyboard);
+  }
+
+  public deleteKeyboard(id: string): Observable<void> {
+    const url = `${this.API_URL}/${id}`;
+    return this.http.delete<void>(url);
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Keyboards } from './shared/models/keyboards';
 import { KeyboardsService } from './shared/services/keyboards.service';
-import { filter } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { isNotNull } from './shared/helpers/is-not-null.helper';
 
 @Component({
@@ -12,16 +12,11 @@ import { isNotNull } from './shared/helpers/is-not-null.helper';
 export class AppComponent {
   title = 'vw-test';
 
-  public keyboards = new Array<Keyboards>();
+  public keyboards$ = new Observable<Array<Keyboards>>();
 
   constructor(private keyboardsService: KeyboardsService) {}
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.keyboardsService
-      .getKeyboards()
-      .pipe(filter(isNotNull))
-      .subscribe((keys) => (this.keyboards = keys));
+    this.keyboards$ = this.keyboardsService.keyboards$;
   }
 }
