@@ -2,17 +2,21 @@
   "keyboards": [
     {
       "id": 1,
+      "name": "Kirche",
       "label": "Gaming RGB",
       "description": "Clean keys and iluminated",
       "category": "mechanical",
-      "lang": "en"
+      "lang": "en",
+      "price": 170
     },
     {
       "id": 2,
+      "name": "KGB maze",
       "label": "Office",
       "description": "Start office and programing code",
       "category": "membrane",
-      "lang": "es"
+      "lang": "es",
+      "price": 49
     }
   ]
 }
